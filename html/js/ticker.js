@@ -1,20 +1,23 @@
 // A comma separated list of currencies to display.
-var ticker_currencies = "USD,BTC,ETH,JPY,CNY"
+var ticker_currencies = "USD,EUR,JPY,CNY"
 
 ticker = function(currencies) {
   var symbols = {
     USD: "$",
     CNY: "¥",
-    JPY: "¥"
+    JPY: "¥",
+    EUR: "€"
   }
 
   $.ajax({
     type: "GET",
-    url: "https://min-api.cryptocompare.com/data/price?fsym=BCC&tsyms=" + currencies,
+    url: "https://min-api.cryptocompare.com/data/price?fsym=BCH&tsyms=" + currencies,
     contentType: "application/json; charset=utf-8",
     timeout: 6000,
     error: function (x, t, m) {
-      $('#ticker').html("N/A")
+      if ($('#ticker_value').html() === 'Loading...') {
+        $('#ticker_value').html("N/A");
+      }
     },
     success: function (currencyRates) {
       var output = [];
@@ -24,12 +27,14 @@ ticker = function(currencies) {
         if (sym === undefined) {
           sym = "";
         }
-        output.push(currency + "&nbsp;-&nbsp;" + sym + price);
+        output.push("BCC/" + currency + "&nbsp;" + sym + price);
       });
 
       $('#ticker_value').html(output.join(" &bull; "));
     }
   }).done(function () {
+    setTimeout(function(){ ticker(ticker_currencies); }, 10000);
+  }).fail(function() {
     setTimeout(function(){ ticker(ticker_currencies); }, 10000);
   });
 }
